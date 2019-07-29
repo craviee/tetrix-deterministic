@@ -1,2 +1,2 @@
 # tetris-deterministic
-Future project of an IA that beats tetris using deterministic algorithm
+Future project of an AI that beats tetris using deterministic algorithm
