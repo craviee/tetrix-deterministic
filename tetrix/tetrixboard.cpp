@@ -91,6 +91,7 @@ QSize TetrixBoard::minimumSizeHint() const
 //! [4]
 void TetrixBoard::start()
 {
+    printf("teste");
     if (isPaused)
         return;
 
