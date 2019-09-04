@@ -51,6 +51,7 @@
 #include "tetrixboard.h"
 
 #include <QtWidgets>
+#include <vector>
 
 //! [0]
 TetrixBoard::TetrixBoard(QWidget *parent)
@@ -61,6 +62,7 @@ TetrixBoard::TetrixBoard(QWidget *parent)
     isStarted = false;
     isPaused = false;
     clearBoard();
+    analyzer = new TetrixAnalyzer(BoardWidth, BoardHeight);
 }
 //! [0]
 
@@ -101,6 +103,9 @@ void TetrixBoard::start()
     emit linesRemovedChanged(numLinesRemoved);
 
     newPiece();
+
+    // currMoviment = analyzer->getMoviments()[0];
+
     timer.start(timeoutTime(), this);
 }
 //! [4]
@@ -169,10 +174,10 @@ void TetrixBoard::keyPressEvent(QKeyEvent *event)
         tryMove(curPiece, curX + 1, curY);
         break;
     case Qt::Key_Down:
-        tryMove(curPiece.rotatedRight(), curX, curY);
+        // tryMove(curPiece.rotatedRight(), curX, curY);
         break;
     case Qt::Key_Up:
-        tryMove(curPiece.rotatedLeft(), curX, curY);
+        // tryMove(curPiece.rotatedLeft(), curX, curY);
         break;
     case Qt::Key_Space:
         dropDown();
@@ -312,6 +317,15 @@ void TetrixBoard::newPiece()
         timer.stop();
         isStarted = false;
     }
+
+    analyzer->setPiece(&curPiece);
+    analyzer->setBoard(board);
+
+    if(analyzer->getMoviments().at(0) == TetrixMoviment::LEFT)
+    {
+        tryMove(curPiece, curX - 1, curY);
+    }
+
 //! [30] //! [31]
 }
 //! [31]

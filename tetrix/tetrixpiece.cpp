@@ -121,17 +121,23 @@ int TetrixPiece::maxY() const
 //! [6]
 
 //! [7]
-TetrixPiece TetrixPiece::rotatedLeft() const
+TetrixPiece TetrixPiece::rotatedLeft(int n) const
 {
     if (pieceShape == SquareShape)
         return *this;
 
     TetrixPiece result;
     result.pieceShape = pieceShape;
-    for (int i = 0; i < 4; ++i) {
-        result.setX(i, y(i));
-        result.setY(i, -x(i));
+    
+    for (int j = 0; j < n; j++)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            result.setX(i, y(i));
+            result.setY(i, -x(i));
+        }
     }
+    
 //! [7]
     return result;
 }

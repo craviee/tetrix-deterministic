@@ -1,3 +1,4 @@
 build/
 !build/Makefile
 tetrix/tetrix.pro.user
+tetrix/.vscode/

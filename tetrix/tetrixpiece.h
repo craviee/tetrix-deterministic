@@ -70,7 +70,7 @@ public:
     int maxX() const;
     int minY() const;
     int maxY() const;
-    TetrixPiece rotatedLeft() const;
+    TetrixPiece rotatedLeft(int n) const;
     TetrixPiece rotatedRight() const;
 
 private:
