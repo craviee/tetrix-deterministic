@@ -18,7 +18,10 @@ private:
     int BoardHeight;
     TetrixPiece *currentPiece;
     TetrixShape *currentBoard;
-    bool tryMove(const TetrixPiece &piece, int newX, int newY);
+    TetrixShape *originalBoard;
+    int countLinesCompleted();
+    bool tryMove(const TetrixPiece &piece, int curX, int curY, int newX, int newY);
+    void dropDown(TetrixPiece curPiece, int curX, int curY);
 };
 
 #endif // TETRIXANALYZER_H

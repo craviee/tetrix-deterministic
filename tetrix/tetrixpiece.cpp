@@ -101,6 +101,28 @@ int TetrixPiece::maxX() const
 }
 //! [4]
 
+int TetrixPiece::maxRotations()
+{
+    switch (pieceShape)
+    {
+        SquareShape:
+            return 1;
+            
+        ZShape:
+        SShape:
+        LineShape:
+            return 2;
+
+        TShape:
+        LShape:
+        MirroredLShape:
+            return 4;
+
+        default:
+            return -1;
+    }
+}
+
 //! [5]
 int TetrixPiece::minY() const
 {

@@ -174,7 +174,7 @@ void TetrixBoard::keyPressEvent(QKeyEvent *event)
         tryMove(curPiece, curX + 1, curY);
         break;
     case Qt::Key_Down:
-        // tryMove(curPiece.rotatedRight(), curX, curY);
+        tryMove(curPiece.rotatedRight(), curX, curY);
         break;
     case Qt::Key_Up:
         // tryMove(curPiece.rotatedLeft(), curX, curY);
@@ -221,13 +221,11 @@ void TetrixBoard::clearBoard()
 //! [19]
 void TetrixBoard::dropDown()
 {
-    int dropHeight = 0;
     int newY = curY;
     while (newY > 0) {
         if (!tryMove(curPiece, curX, newY - 1))
             break;
         --newY;
-        ++dropHeight;
     }
     pieceDropped();
 //! [19] //! [20]
