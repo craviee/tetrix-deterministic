@@ -1,4 +1,5 @@
 QT += widgets
+CONFIG += c++17
 
 HEADERS       = tetrixboard.h \
                 tetrixanalyzer.h \

@@ -105,17 +105,17 @@ int TetrixPiece::maxRotations()
 {
     switch (pieceShape)
     {
-        SquareShape:
+        case TetrixShape::SquareShape:
             return 1;
             
-        ZShape:
-        SShape:
-        LineShape:
+        case TetrixShape::ZShape:
+        case TetrixShape::SShape:
+        case TetrixShape::LineShape:
             return 2;
 
-        TShape:
-        LShape:
-        MirroredLShape:
+        case TetrixShape::TShape:
+        case TetrixShape::LShape:
+        case TetrixShape::MirroredLShape:
             return 4;
 
         default:
@@ -161,6 +161,7 @@ TetrixPiece TetrixPiece::rotatedLeft(int n) const
     }
     
 //! [7]
+
     return result;
 }
 

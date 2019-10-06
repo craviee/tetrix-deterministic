@@ -6,7 +6,11 @@ TetrixAnalyzer::TetrixAnalyzer(int width, int height)
 {
     BoardWidth = width;
     BoardHeight = height;
-    currentBoard = new TetrixShape[width * height];
+    // currentBoard.resize(height);
+    // for(auto vector : currentBoard)
+    // {
+    //     vector.resize(width);
+    // }
 }
 
 void TetrixAnalyzer::setPiece(TetrixPiece *piece)
@@ -14,117 +18,263 @@ void TetrixAnalyzer::setPiece(TetrixPiece *piece)
     currentPiece = piece;
 }
 
-void TetrixAnalyzer::setBoard(TetrixShape *board)
+void TetrixAnalyzer::clearBoard()
 {
     
-    originalBoard = board;
-    for(int i = 0; i < (BoardWidth * BoardHeight); i++)
-        currentBoard[i] = originalBoard[i];
-    
-}
-
-bool TetrixAnalyzer::tryMove(const TetrixPiece &piece, int curX, int curY, int newX, int newY)
-{
-    for (int i = 0; i < 4; ++i) {
-        int x = newX + piece.x(i);
-        int y = newY - piece.y(i);
-        if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
-            return false;
-        if (currentBoard[(y * BoardWidth) + x] != NoShape)
-            return false;
-    }
-    curX = newX;
-    curY = newY;
-    return true;
-}
-
-void TetrixAnalyzer::dropDown(TetrixPiece curPiece, int curX, int curY)
-{
-    int newY = curY;
-    while (newY > 0) {
-        if (!tryMove(curPiece,curX, curY, curX, newY - 1))
-            break;
-        --newY;
-    }
-    for (int i = 0; i < 4; ++i) {
-        int x = curX + curPiece.x(i);
-        int y = curY - curPiece.y(i);
-        currentBoard[(y * BoardWidth) + x] = curPiece.shape();
-    }
-
-
-    printf("new dropdown\n");
     for(int i = 0; i < BoardHeight; i++)
     {
-        for(int j = 0; j < BoardWidth; j++)
-        {
-            if(currentBoard[(i * BoardWidth) + j] == NoShape)
-                printf("0 ");
-            else
-                printf("1 ");
-        }
-        printf("\n");
-    }
         
+        for(int j = 0; j < BoardWidth; j++)
+            currentBoard[i][j] = originalBoard[(i*BoardWidth) +j] == TetrixShape::NoShape ? 0 : 1;
 
-//! [19] //! [20]
+    }
+
+    // for(int i=0; i< BoardHeight; i++)
+    // {
+    //     for(int j=0; j < BoardWidth; j++)
+    //     {
+    //         printf("%d",currentBoard[i][j]);
+    //     }
+    //     printf("\n");
+    // }
 }
 
-int TetrixAnalyzer::countLinesCompleted()
+void TetrixAnalyzer::setBoard(TetrixShape *board)
 {
-    int numFullLines=0;
-
-    for (int i = BoardHeight - 1; i >= 0; --i) {
-        bool lineIsFull = true;
-
-        for (int j = 0; j < BoardWidth; ++j) {
-            if (currentBoard[(i * BoardWidth) + j] == NoShape) {
-                lineIsFull = false;
-                break;
-            }
-        }
-
-        if (lineIsFull) {
-//! [24] //! [25]
-            ++numFullLines;
-        }
-//! [26] //! [27]
+    originalBoard.resize(BoardHeight*BoardWidth);
+    currentBoard.resize(BoardHeight);
+    for(int i=0; i< BoardHeight; i++)
+    {
+        currentBoard[i].resize(BoardWidth);
+        for(int j=0; j < BoardWidth; j++)
+        {
+            originalBoard[i*BoardWidth + j] = board[i*BoardWidth + j];
+        }  
+        
     }
-    return numFullLines;
+    // printf("sdadasdasdasd");
+    clearBoard();
+}
+
+std::vector<std::vector<std::vector<int>>> TetrixAnalyzer::rotationList()
+{
+    std::vector<std::vector<std::vector<int>>> rotations;
+    switch (currentPiece->shape())
+    {
+        case TetrixShape::SquareShape:
+            rotations.push_back
+            ({
+                {1,1,0,0},
+                {1,1,0,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            break;
+            
+        case TetrixShape::ZShape:
+            rotations.push_back
+            ({
+                {0,1,0,0},
+                {1,1,0,0},
+                {1,0,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {1,1,0,0},
+                {0,1,1,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            break;
+
+        case TetrixShape::SShape:
+            rotations.push_back
+            ({
+                {1,0,0,0},
+                {1,1,0,0},
+                {0,1,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {0,1,1,0},
+                {1,1,0,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            break;
+
+        case TetrixShape::LineShape:
+            rotations.push_back
+            ({
+                {1,0,0,0},
+                {1,0,0,0},
+                {1,0,0,0},
+                {1,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {1,1,1,1},
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            break;
+
+        case TetrixShape::TShape:
+            rotations.push_back
+            ({
+                {1,1,1,0},
+                {0,1,0,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {0,1,0,0},
+                {1,1,0,0},
+                {0,1,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {0,1,0,0},
+                {1,1,1,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {1,0,0,0},
+                {1,1,0,0},
+                {1,0,0,0},
+                {0,0,0,0}
+            });
+            break;
+
+        case TetrixShape::LShape:
+            rotations.push_back
+            ({
+                {1,1,0,0},
+                {0,1,0,0},
+                {0,1,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {1,1,1,0},
+                {1,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {1,0,0,0},
+                {1,0,0,0},
+                {1,1,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {0,0,1,0},
+                {1,1,1,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            break;
+
+        case TetrixShape::MirroredLShape:
+            rotations.push_back
+            ({
+                {1,1,0,0},
+                {1,0,0,0},
+                {1,0,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {1,1,1,0},
+                {0,0,1,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {0,1,0,0},
+                {0,1,0,0},
+                {1,1,0,0},
+                {0,0,0,0}
+            });
+            rotations.push_back
+            ({
+                {1,0,0,0},
+                {1,1,1,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            });
+            break;
+
+        case TetrixShape::NoShape:
+            rotations.push_back
+            ({
+                {1,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1}
+            });
+            break;
+    }
+    return rotations;
 }
 
 std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
 {
-    int curX, curY;
-    int curLinesCompleted;
-    int t = -1;
-    int q;
-    
     std::vector<TetrixMoviment> result;
-    TetrixPiece rotatedPiece;
     result.push_back(TetrixMoviment::LEFT);
-    for(int i = 1; i <= 4; i++)
+    int piece_len;
+
+    for(auto piece : rotationList())
     {
-        for(int j = 0; j < BoardWidth; j++ )
+        piece_len=0;
+        for(int i=3; i >=0; i--)
         {
-            rotatedPiece = currentPiece->rotatedLeft(i);
-            curX = j;
-            curY = BoardHeight - 1 + rotatedPiece.minY();
-            // printf("i=%d j=%d curY=%d\n", i,j,curY);
-            dropDown(rotatedPiece, curX, curY);
-            curLinesCompleted = countLinesCompleted();
-            if(t < curLinesCompleted)
-                t = curLinesCompleted;
-            q=0;
-            for(int k = 0; k < (BoardWidth * BoardHeight); k++)
+            for(int j=0; j < 4; j++)
             {
-                currentBoard[k] = originalBoard[k];
-                if(originalBoard[k] != NoShape)
-                    q++;
+                if(piece[j][i])
+                {
+                    piece_len = i;
+                    goto found;
+                }
             }
-            // printf("number of pieces: %d\n", q);     
+        }
+        found:;
+        for(int position=0; position < (BoardWidth - piece_len); position++)
+        {
+            clearBoard();
+            for(int i=0; i < 4; i++)
+            {
+                for(int j=0; j <= piece_len; j++)
+                {
+                    // printf("BoardWidth: %d\n", BoardWidth);
+                    // printf("j: %d\n", j);
+                    // printf("position: %d\n", position);
+                    // printf("position + j: %d\n", position + j);
+                    // printf("piece_len: %d\n\n", piece_len);
+                    currentBoard[i][j + position] = piece[i][j];
+                }
+            }
+            for(int i=0; i< BoardHeight; i++)
+            {
+                for(int j=0; j < BoardWidth; j++)
+                {
+                    printf("%d",currentBoard[i][j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
         }
     }
-    printf("best value: %d\n", t);
+    printf("\n\n\nEND\n\n\n");
     return result;
 }

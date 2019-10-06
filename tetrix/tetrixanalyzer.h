@@ -16,12 +16,11 @@ public:
 private:
     int BoardWidth;
     int BoardHeight;
+    void clearBoard();
     TetrixPiece *currentPiece;
-    TetrixShape *currentBoard;
-    TetrixShape *originalBoard;
-    int countLinesCompleted();
-    bool tryMove(const TetrixPiece &piece, int curX, int curY, int newX, int newY);
-    void dropDown(TetrixPiece curPiece, int curX, int curY);
+    std::vector<std::vector<int>> currentBoard;
+    std::vector<TetrixShape> originalBoard;
+    std::vector<std::vector<std::vector<int>>> rotationList();
 };
 
 #endif // TETRIXANALYZER_H
