@@ -232,11 +232,13 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
 {
     std::vector<TetrixMoviment> result;
     result.push_back(TetrixMoviment::LEFT);
-    int piece_len;
+    int piece_len, piece_height, piece_down;
 
     for(auto piece : rotationList())
     {
         piece_len=0;
+        piece_height=0;
+
         for(int i=3; i >=0; i--)
         {
             for(int j=0; j < 4; j++)
@@ -244,26 +246,59 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
                 if(piece[j][i])
                 {
                     piece_len = i;
-                    goto found;
+                    goto found_len;
                 }
             }
         }
-        found:;
+        found_len:;
+        for(int i=3; i >=0; i--)
+        {
+            for(int j=0; j < 4; j++)
+            {
+                if(piece[i][j])
+                {
+                    piece_height = i;
+                    goto found_height;
+                }
+            }
+        }
+        found_height:;
         for(int position=0; position < (BoardWidth - piece_len); position++)
         {
             clearBoard();
-            for(int i=0; i < 4; i++)
+            for(int i=0; i <= piece_height; i++)
             {
                 for(int j=0; j <= piece_len; j++)
                 {
-                    // printf("BoardWidth: %d\n", BoardWidth);
-                    // printf("j: %d\n", j);
-                    // printf("position: %d\n", position);
-                    // printf("position + j: %d\n", position + j);
-                    // printf("piece_len: %d\n\n", piece_len);
                     currentBoard[i][j + position] = piece[i][j];
                 }
             }
+            piece_down = 0;
+            for(int i=piece_height+1; i < BoardHeight; i++)
+            {
+                for(int j=0; j <= piece_len; j++)
+                {
+                    if(currentBoard[i][j + position])
+                    {
+                        piece_down = i;
+                        goto found_down;
+                    }
+                }
+            }
+            found_down:;
+            
+            for(int i=piece_height+1; i < BoardHeight; i++)
+            {
+                for(int j=0; j <= piece_len; j++)
+                {
+                    if(currentBoard[i][j + position])
+                    {
+                        piece_down = i;
+                        goto found_down;
+                    }
+                }
+            }
+
             for(int i=0; i< BoardHeight; i++)
             {
                 for(int j=0; j < BoardWidth; j++)
