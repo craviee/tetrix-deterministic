@@ -21,22 +21,14 @@ void TetrixAnalyzer::setPiece(TetrixPiece *piece)
 void TetrixAnalyzer::clearBoard()
 {
     
-    for(int i = 0; i < BoardHeight; i++)
+    for(int i = 0, k = BoardHeight-1; i < BoardHeight; i++,k--)
     {
         
         for(int j = 0; j < BoardWidth; j++)
-            currentBoard[i][j] = originalBoard[(i*BoardWidth) +j] == TetrixShape::NoShape ? 0 : 1;
+            currentBoard[k][j] = originalBoard[(i*BoardWidth) +j] == TetrixShape::NoShape ? 0 : 1;
 
     }
 
-    // for(int i=0; i< BoardHeight; i++)
-    // {
-    //     for(int j=0; j < BoardWidth; j++)
-    //     {
-    //         printf("%d",currentBoard[i][j]);
-    //     }
-    //     printf("\n");
-    // }
 }
 
 void TetrixAnalyzer::setBoard(TetrixShape *board)
@@ -54,6 +46,16 @@ void TetrixAnalyzer::setBoard(TetrixShape *board)
     }
     // printf("sdadasdasdasd");
     clearBoard();
+
+    // for(int i=0; i< BoardHeight; i++)
+    // {
+    //     for(int j=0; j < BoardWidth; j++)
+    //     {
+    //         printf("%d",currentBoard[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    // printf("\n");
 }
 
 std::vector<std::vector<std::vector<int>>> TetrixAnalyzer::rotationList()
@@ -286,19 +288,42 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
                 }
             }
             found_down:;
-            
-            for(int i=piece_height+1; i < BoardHeight; i++)
+
+            piece_down=BoardHeight-piece_height-1;
+            for(int j=0; j <= piece_len; j++)
             {
-                for(int j=0; j <= piece_len; j++)
+                for(int i=piece_height; i >= 0; i--)
                 {
                     if(currentBoard[i][j + position])
                     {
-                        piece_down = i;
-                        goto found_down;
+                        for(int k=piece_height+1; k < BoardHeight; k++)
+                        {
+                            // printf("currentBoard[k][j + position]: %d k: %d j+position: %d k-i-1: %d piece_down: %d\n",currentBoard[k][j + position],k, j+position,k-i-1, piece_down);
+                            if(currentBoard[k][j + position] && (k-i-1 < piece_down))
+                            {
+                                // printf("entered here \n");
+                                piece_down = k - i -1;
+                                break;
+                            }
+                        }
+                        break;
                     }
                 }
             }
 
+            for(int j=0; j <= piece_len; j++)
+            {
+                for(int i=piece_height; i >= 0; i--)
+                {
+                    if(currentBoard[i][j + position])
+                    {
+                        currentBoard[i+piece_down][j + position] = 1;
+                        currentBoard[i][j + position] = 0;
+                    }
+                }
+            }
+
+            printf("piece_down: %d\n", piece_down);
             for(int i=0; i< BoardHeight; i++)
             {
                 for(int j=0; j < BoardWidth; j++)
