@@ -17,6 +17,9 @@ private:
     int BoardWidth;
     int BoardHeight;
     void clearBoard();
+    int calculateCompleteLines();
+    int calculateHoles();
+    int calculateRawHeight();
     TetrixPiece *currentPiece;
     std::vector<std::vector<int>> currentBoard;
     std::vector<TetrixShape> originalBoard;

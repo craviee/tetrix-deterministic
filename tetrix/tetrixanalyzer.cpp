@@ -230,6 +230,57 @@ std::vector<std::vector<std::vector<int>>> TetrixAnalyzer::rotationList()
     return rotations;
 }
 
+int TetrixAnalyzer::calculateCompleteLines()
+{
+    int completedLines = 0;
+    int sumLine;
+    for(int i=BoardHeight-1; i >= 0; i--)
+    {
+        sumLine = 0;
+        for(int j=0; j < BoardWidth; j++)
+        {
+            sumLine += currentBoard[i][j];
+        }
+        if(!sumLine)
+            return completedLines;
+        else if(sumLine == BoardWidth)
+            completedLines++;
+    }
+    return -1;
+}
+
+int TetrixAnalyzer::calculateHoles()
+{
+    int holes = 0;
+    int sumLine;
+    bool foundPiece;
+    for(int j=0; j < BoardWidth; j++)
+    {
+        foundPiece = false;
+        for(int i=0; i < BoardHeight; i++)
+        {
+            if(foundPiece && !currentBoard[i][j])
+                holes++;
+            else if(currentBoard[i][j])
+                foundPiece = true;
+        }
+    }
+    return holes;
+}
+
+int TetrixAnalyzer::calculateRawHeight()
+{
+    for(int i=0; i < BoardHeight; i++)
+    {
+        for(int j=0; j < BoardWidth; j++)
+        {
+            if(currentBoard[i][j])
+                return BoardHeight - i;
+        }
+    }
+    return 0;
+}
+
 std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
 {
     std::vector<TetrixMoviment> result;
@@ -322,6 +373,14 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
                     }
                 }
             }
+
+            int lines = calculateCompleteLines();
+            int holes = calculateHoles();
+            int height = calculateRawHeight() - lines;
+
+            printf("lines: %d\n", lines);
+            printf("holes: %d\n", holes);
+            printf("height: %d\n", height);
 
             printf("piece_down: %d\n", piece_down);
             for(int i=0; i< BoardHeight; i++)
