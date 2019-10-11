@@ -2,6 +2,7 @@
 ![Tetrix Gif](https://github.com/craviee/tetrix-deterministic/blob/master/animation.gif "")
 
 Deterministic Tetrix is a project of deterministic AI that uses greedy algorithm without lookahead on the next piece.
+The GUI is from the Tetrix example project on Qt.
 
 ## Dependencies
 
