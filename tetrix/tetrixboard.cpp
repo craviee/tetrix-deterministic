@@ -177,7 +177,7 @@ void TetrixBoard::keyPressEvent(QKeyEvent *event)
         tryMove(curPiece.rotatedRight(), curX, curY);
         break;
     case Qt::Key_Up:
-        // tryMove(curPiece.rotatedLeft(), curX, curY);
+        tryMove(curPiece.rotatedLeft(), curX, curY);
         break;
     case Qt::Key_Space:
         dropDown();
@@ -307,8 +307,9 @@ void TetrixBoard::removeFullLines()
 void TetrixBoard::newPiece()
 {
     curPiece.setRandomShape();
+    // curX = -curPiece.minX();
     curX = BoardWidth / 2 + 1;
-    curY = BoardHeight - 1 + curPiece.minY();
+    curY = BoardHeight - 2 + curPiece.minY();
 
     if (!tryMove(curPiece, curX, curY)) {
         curPiece.setShape(NoShape);
@@ -319,9 +320,28 @@ void TetrixBoard::newPiece()
     analyzer->setPiece(&curPiece);
     analyzer->setBoard(board);
 
-    if(analyzer->getMoviments().at(0) == TetrixMoviment::LEFT)
+    for(auto moviment : analyzer->getMoviments())
     {
-        tryMove(curPiece, curX - 1, curY);
+        switch (moviment)
+        {
+            case TetrixMoviment::LEFT:
+                printf("executing LEFT\n");
+                tryMove(curPiece, curX - 1, curY);
+                break;
+            case TetrixMoviment::RIGHT:
+                printf("executing RIGHT\n");
+                tryMove(curPiece, curX + 1, curY);
+                break;
+            case TetrixMoviment::ROTATE_RIGHT:
+                printf("executing ROTATE_RIGHT\n");
+                tryMove(curPiece.rotatedRight(), curX, curY);
+                // tryMove(curPiece.rotatedRight(), curX, curY);
+                break;
+            case TetrixMoviment::ROTATE_LEFT:
+                printf("executing ROTATE_LEFT\n");
+                tryMove(curPiece.rotatedLeft(), curX, curY);
+                break;
+        }
     }
 
 //! [30] //! [31]

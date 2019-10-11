@@ -165,8 +165,8 @@ std::vector<std::vector<std::vector<int>>> TetrixAnalyzer::rotationList()
             });
             rotations.push_back
             ({
+                {0,0,1,0},
                 {1,1,1,0},
-                {1,0,0,0},
                 {0,0,0,0},
                 {0,0,0,0}
             });
@@ -179,8 +179,8 @@ std::vector<std::vector<std::vector<int>>> TetrixAnalyzer::rotationList()
             });
             rotations.push_back
             ({
-                {0,0,1,0},
                 {1,1,1,0},
+                {1,0,0,0},
                 {0,0,0,0},
                 {0,0,0,0}
             });
@@ -239,7 +239,8 @@ int TetrixAnalyzer::calculateCompleteLines()
         sumLine = 0;
         for(int j=0; j < BoardWidth; j++)
         {
-            sumLine += currentBoard[i][j];
+            sumLine += currentBoard[i][j] ? 1 : 0;
+            // sumLine += currentBoard[i][j];
         }
         if(!sumLine)
             return completedLines;
@@ -252,16 +253,23 @@ int TetrixAnalyzer::calculateCompleteLines()
 int TetrixAnalyzer::calculateHoles()
 {
     int holes = 0;
-    int sumLine;
     bool foundPiece;
+    bool endPiece;
     for(int j=0; j < BoardWidth; j++)
     {
         foundPiece = false;
+        endPiece = false;
         for(int i=0; i < BoardHeight; i++)
         {
-            if(foundPiece && !currentBoard[i][j])
+            
+            if(foundPiece && currentBoard[i][j] && endPiece)
+                break;
+            else if(foundPiece && !currentBoard[i][j])
+            {
                 holes++;
-            else if(currentBoard[i][j])
+                endPiece = true;
+            }
+            else if(currentBoard[i][j] == 2)
                 foundPiece = true;
         }
     }
@@ -284,11 +292,15 @@ int TetrixAnalyzer::calculateRawHeight()
 std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
 {
     std::vector<TetrixMoviment> result;
-    result.push_back(TetrixMoviment::LEFT);
+    result.push_back(TetrixMoviment::ROTATE_LEFT);
     int piece_len, piece_height, piece_down;
-
-    for(auto piece : rotationList())
+    double currentBest = -(BoardHeight*BoardWidth);
+    auto rotations = rotationList();
+    for(int index = 0; index < rotations.size(); index++)
+    // for(auto piece = rotations[index]; index < rotations.size(); piece = rotations[index])
+    // for(auto piece : rotationList())
     {
+        auto piece = rotations[index];
         piece_len=0;
         piece_height=0;
 
@@ -368,7 +380,7 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
                 {
                     if(currentBoard[i][j + position])
                     {
-                        currentBoard[i+piece_down][j + position] = 1;
+                        currentBoard[i+piece_down][j + position] = 2;
                         currentBoard[i][j + position] = 0;
                     }
                 }
@@ -376,13 +388,59 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
 
             int lines = calculateCompleteLines();
             int holes = calculateHoles();
-            int height = calculateRawHeight() - lines;
+            double height = (double)piece_down/10;
+            // int height = calculateRawHeight() - lines;
 
             printf("lines: %d\n", lines);
             printf("holes: %d\n", holes);
-            printf("height: %d\n", height);
+            printf("height: %lf\n", height);
+            printf("piece_down: %d\n\n", piece_down);
 
-            printf("piece_down: %d\n", piece_down);
+            printf("eval: %lf\n", evaluateChoice(lines,holes,height));
+            printf("currentBest: %lf\n\n", currentBest);
+
+            if(evaluateChoice(lines,holes,height) > currentBest)
+            {
+                printf("better than current best!\noldValue: %lf\ncurrestBest: %lf\n",currentBest,evaluateChoice(lines,holes,height));
+                result.clear();
+                if(index == 3)
+                {
+                    result.push_back(TetrixMoviment::ROTATE_LEFT);
+                    printf("ROTATE_LEFT\n");
+                }
+                else
+                {
+                    for(int i = 0; i < index; i++)
+                    {
+                        result.push_back(TetrixMoviment::ROTATE_RIGHT);
+                        printf("ROTATE_RIGHT\n");
+                    }
+                }
+                
+
+                for(int i= 0; i < BoardWidth; i++)
+                    result.push_back(TetrixMoviment::LEFT);
+                // if(position < 6)
+                // {
+                //     for(int i=position; i < 6; i++)
+                //     {
+                //         result.push_back(TetrixMoviment::LEFT);
+                //         printf("LEFT\n");
+                //     }
+                // }
+                // else if(position > 6)
+                // {
+                    for(int i=0; i < position; i++)
+                    {
+                        result.push_back(TetrixMoviment::RIGHT);
+                        printf("RIGHT\n");
+                    }
+                // }
+
+                currentBest = evaluateChoice(lines,holes,height);
+            }
+                
+
             for(int i=0; i< BoardHeight; i++)
             {
                 for(int j=0; j < BoardWidth; j++)
@@ -395,5 +453,6 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
         }
     }
     printf("\n\n\nEND\n\n\n");
+    // result.clear();
     return result;
 }

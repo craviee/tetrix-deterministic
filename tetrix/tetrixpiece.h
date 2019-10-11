@@ -71,7 +71,7 @@ public:
     int minY() const;
     int maxY() const;
     int maxRotations();
-    TetrixPiece rotatedLeft(int n) const;
+    TetrixPiece rotatedLeft() const;
     TetrixPiece rotatedRight() const;
 
 private:
