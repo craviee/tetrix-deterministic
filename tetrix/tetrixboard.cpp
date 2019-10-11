@@ -51,6 +51,7 @@
 #include "tetrixboard.h"
 
 #include <QtWidgets>
+#include <vector>
 
 //! [0]
 TetrixBoard::TetrixBoard(QWidget *parent)
@@ -61,8 +62,7 @@ TetrixBoard::TetrixBoard(QWidget *parent)
     isStarted = false;
     isPaused = false;
     clearBoard();
-
-    nextPiece.setRandomShape();
+    analyzer = new TetrixAnalyzer(BoardWidth, BoardHeight);
 }
 //! [0]
 
@@ -91,7 +91,6 @@ QSize TetrixBoard::minimumSizeHint() const
 //! [4]
 void TetrixBoard::start()
 {
-    printf("teste");
     if (isPaused)
         return;
 
@@ -99,34 +98,19 @@ void TetrixBoard::start()
     isWaitingAfterLine = false;
     numLinesRemoved = 0;
     numPiecesDropped = 0;
-    score = 0;
-    level = 1;
     clearBoard();
 
     emit linesRemovedChanged(numLinesRemoved);
-    emit scoreChanged(score);
-    emit levelChanged(level);
 
     newPiece();
+
+    // currMoviment = analyzer->getMoviments()[0];
+
     timer.start(timeoutTime(), this);
 }
 //! [4]
 
 //! [5]
-void TetrixBoard::pause()
-{
-    if (!isStarted)
-        return;
-
-    isPaused = !isPaused;
-    if (isPaused) {
-        timer.stop();
-    } else {
-        timer.start(timeoutTime(), this);
-    }
-    update();
-//! [5] //! [6]
-}
 //! [6]
 
 //! [7]
@@ -237,15 +221,13 @@ void TetrixBoard::clearBoard()
 //! [19]
 void TetrixBoard::dropDown()
 {
-    int dropHeight = 0;
     int newY = curY;
     while (newY > 0) {
         if (!tryMove(curPiece, curX, newY - 1))
             break;
         --newY;
-        ++dropHeight;
     }
-    pieceDropped(dropHeight);
+    pieceDropped();
 //! [19] //! [20]
 }
 //! [20]
@@ -254,12 +236,12 @@ void TetrixBoard::dropDown()
 void TetrixBoard::oneLineDown()
 {
     if (!tryMove(curPiece, curX, curY - 1))
-        pieceDropped(0);
+        pieceDropped();
 }
 //! [21]
 
 //! [22]
-void TetrixBoard::pieceDropped(int dropHeight)
+void TetrixBoard::pieceDropped()
 {
     for (int i = 0; i < 4; ++i) {
         int x = curX + curPiece.x(i);
@@ -268,14 +250,7 @@ void TetrixBoard::pieceDropped(int dropHeight)
     }
 
     ++numPiecesDropped;
-    if (numPiecesDropped % 25 == 0) {
-        ++level;
-        timer.start(timeoutTime(), this);
-        emit levelChanged(level);
-    }
 
-    score += dropHeight + 7;
-    emit scoreChanged(score);
     removeFullLines();
 
     if (!isWaitingAfterLine)
@@ -317,9 +292,7 @@ void TetrixBoard::removeFullLines()
 //! [28]
     if (numFullLines > 0) {
         numLinesRemoved += numFullLines;
-        score += 10 * numFullLines;
         emit linesRemovedChanged(numLinesRemoved);
-        emit scoreChanged(score);
 
         timer.start(500, this);
         isWaitingAfterLine = true;
@@ -333,43 +306,50 @@ void TetrixBoard::removeFullLines()
 //! [30]
 void TetrixBoard::newPiece()
 {
-    curPiece = nextPiece;
-    nextPiece.setRandomShape();
-    showNextPiece();
+    curPiece.setRandomShape();
+    // curX = -curPiece.minX();
     curX = BoardWidth / 2 + 1;
-    curY = BoardHeight - 1 + curPiece.minY();
+    curY = BoardHeight - 2 + curPiece.minY();
 
     if (!tryMove(curPiece, curX, curY)) {
         curPiece.setShape(NoShape);
         timer.stop();
         isStarted = false;
     }
+
+    analyzer->setPiece(&curPiece);
+    analyzer->setBoard(board);
+
+    for(auto moviment : analyzer->getMoviments())
+    {
+        switch (moviment)
+        {
+            case TetrixMoviment::LEFT:
+                printf("executing LEFT\n");
+                tryMove(curPiece, curX - 1, curY);
+                break;
+            case TetrixMoviment::RIGHT:
+                printf("executing RIGHT\n");
+                tryMove(curPiece, curX + 1, curY);
+                break;
+            case TetrixMoviment::ROTATE_RIGHT:
+                printf("executing ROTATE_RIGHT\n");
+                tryMove(curPiece.rotatedRight(), curX, curY);
+                // tryMove(curPiece.rotatedRight(), curX, curY);
+                break;
+            case TetrixMoviment::ROTATE_LEFT:
+                printf("executing ROTATE_LEFT\n");
+                tryMove(curPiece.rotatedLeft(), curX, curY);
+                break;
+        }
+    }
+
 //! [30] //! [31]
 }
 //! [31]
 
 //! [32]
-void TetrixBoard::showNextPiece()
-{
-    if (!nextPieceLabel)
-        return;
 
-    int dx = nextPiece.maxX() - nextPiece.minX() + 1;
-    int dy = nextPiece.maxY() - nextPiece.minY() + 1;
-
-    QPixmap pixmap(dx * squareWidth(), dy * squareHeight());
-    QPainter painter(&pixmap);
-    painter.fillRect(pixmap.rect(), nextPieceLabel->palette().window());
-
-    for (int i = 0; i < 4; ++i) {
-        int x = nextPiece.x(i) - nextPiece.minX();
-        int y = nextPiece.y(i) - nextPiece.minY();
-        drawSquare(painter, x * squareWidth(), y * squareHeight(),
-                   nextPiece.shape());
-    }
-    nextPieceLabel->setPixmap(pixmap);
-//! [32] //! [33]
-}
 //! [33]
 
 //! [34]

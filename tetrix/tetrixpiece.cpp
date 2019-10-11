@@ -101,6 +101,28 @@ int TetrixPiece::maxX() const
 }
 //! [4]
 
+int TetrixPiece::maxRotations()
+{
+    switch (pieceShape)
+    {
+        case TetrixShape::SquareShape:
+            return 1;
+            
+        case TetrixShape::ZShape:
+        case TetrixShape::SShape:
+        case TetrixShape::LineShape:
+            return 2;
+
+        case TetrixShape::TShape:
+        case TetrixShape::LShape:
+        case TetrixShape::MirroredLShape:
+            return 4;
+
+        default:
+            return -1;
+    }
+}
+
 //! [5]
 int TetrixPiece::minY() const
 {
@@ -128,11 +150,14 @@ TetrixPiece TetrixPiece::rotatedLeft() const
 
     TetrixPiece result;
     result.pieceShape = pieceShape;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         result.setX(i, y(i));
         result.setY(i, -x(i));
     }
+    
 //! [7]
+
     return result;
 }
 
@@ -144,7 +169,8 @@ TetrixPiece TetrixPiece::rotatedRight() const
 
     TetrixPiece result;
     result.pieceShape = pieceShape;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         result.setX(i, -y(i));
         result.setY(i, x(i));
     }
