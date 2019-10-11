@@ -6,11 +6,6 @@ TetrixAnalyzer::TetrixAnalyzer(int width, int height)
 {
     BoardWidth = width;
     BoardHeight = height;
-    // currentBoard.resize(height);
-    // for(auto vector : currentBoard)
-    // {
-    //     vector.resize(width);
-    // }
 }
 
 void TetrixAnalyzer::setPiece(TetrixPiece *piece)
@@ -18,44 +13,31 @@ void TetrixAnalyzer::setPiece(TetrixPiece *piece)
     currentPiece = piece;
 }
 
-void TetrixAnalyzer::clearBoard()
+std::vector<std::vector<int>>  TetrixAnalyzer::getClearBoard()
 {
-    
+    std::vector<std::vector<int>> clearBoard;
+    clearBoard.resize(BoardHeight, std::vector<int>(BoardWidth));
+
     for(int i = 0, k = BoardHeight-1; i < BoardHeight; i++,k--)
     {
-        
         for(int j = 0; j < BoardWidth; j++)
-            currentBoard[k][j] = originalBoard[(i*BoardWidth) +j] == TetrixShape::NoShape ? 0 : 1;
-
+        {
+            clearBoard[k][j] = reversedBoard[(i*BoardWidth) +j] == TetrixShape::NoShape ? 0 : 1;
+        }
     }
-
+    return clearBoard;
 }
 
 void TetrixAnalyzer::setBoard(TetrixShape *board)
 {
-    originalBoard.resize(BoardHeight*BoardWidth);
-    currentBoard.resize(BoardHeight);
+    reversedBoard.resize(BoardHeight*BoardWidth);
     for(int i=0; i< BoardHeight; i++)
     {
-        currentBoard[i].resize(BoardWidth);
         for(int j=0; j < BoardWidth; j++)
         {
-            originalBoard[i*BoardWidth + j] = board[i*BoardWidth + j];
+            reversedBoard[i*BoardWidth + j] = board[i*BoardWidth + j];
         }  
-        
     }
-    // printf("sdadasdasdasd");
-    clearBoard();
-
-    // for(int i=0; i< BoardHeight; i++)
-    // {
-    //     for(int j=0; j < BoardWidth; j++)
-    //     {
-    //         printf("%d",currentBoard[i][j]);
-    //     }
-    //     printf("\n");
-    // }
-    // printf("\n");
 }
 
 std::vector<std::vector<std::vector<int>>> TetrixAnalyzer::rotationList()
@@ -230,7 +212,7 @@ std::vector<std::vector<std::vector<int>>> TetrixAnalyzer::rotationList()
     return rotations;
 }
 
-int TetrixAnalyzer::calculateCompleteLines()
+int TetrixAnalyzer::calculateCompleteLines(std::vector<std::vector<int>> currentBoard)
 {
     int completedLines = 0;
     int sumLine;
@@ -240,7 +222,6 @@ int TetrixAnalyzer::calculateCompleteLines()
         for(int j=0; j < BoardWidth; j++)
         {
             sumLine += currentBoard[i][j] ? 1 : 0;
-            // sumLine += currentBoard[i][j];
         }
         if(!sumLine)
             return completedLines;
@@ -250,7 +231,7 @@ int TetrixAnalyzer::calculateCompleteLines()
     return -1;
 }
 
-int TetrixAnalyzer::calculateHoles()
+int TetrixAnalyzer::calculateHoles(std::vector<std::vector<int>> currentBoard)
 {
     int holes = 0;
     bool foundPiece;
@@ -276,7 +257,7 @@ int TetrixAnalyzer::calculateHoles()
     return holes;
 }
 
-int TetrixAnalyzer::calculateRawHeight()
+int TetrixAnalyzer::calculateRawHeight(std::vector<std::vector<int>> currentBoard)
 {
     for(int i=0; i < BoardHeight; i++)
     {
@@ -292,7 +273,6 @@ int TetrixAnalyzer::calculateRawHeight()
 std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
 {
     std::vector<TetrixMoviment> result;
-    result.push_back(TetrixMoviment::ROTATE_LEFT);
     int piece_len, piece_height, piece_down;
     double currentBest = -(BoardHeight*BoardWidth);
     auto rotations = rotationList();
@@ -330,7 +310,8 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
         found_height:;
         for(int position=0; position < (BoardWidth - piece_len); position++)
         {
-            clearBoard();
+            auto currentBoard = getClearBoard();
+            
             for(int i=0; i <= piece_height; i++)
             {
                 for(int j=0; j <= piece_len; j++)
@@ -386,8 +367,8 @@ std::vector<TetrixMoviment> TetrixAnalyzer::getMoviments()
                 }
             }
 
-            int lines = calculateCompleteLines();
-            int holes = calculateHoles();
+            int lines = calculateCompleteLines(currentBoard);
+            int holes = calculateHoles(currentBoard);
             double height = (double)piece_down/10;
             // int height = calculateRawHeight() - lines;
 
