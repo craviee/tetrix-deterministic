@@ -39,7 +39,7 @@ private:
 
     TetrixAnalyzer *analyzer;
     TetrixShape &shapeAt(int x, int y) { return board[(y * BoardWidth) + x]; }
-    int timeoutTime() { return 1000; }
+    int timeoutTime() { return 10; }
     int squareWidth() { return contentsRect().width() / BoardWidth; }
     int squareHeight() { return contentsRect().height() / BoardHeight; }
     void runAI();
