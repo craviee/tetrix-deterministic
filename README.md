@@ -1,4 +1,4 @@
-# Deterministic Tetrix AI V1.0
+# Deterministic Tetrix AI V1.1
 ![Tetrix Gif](https://github.com/craviee/tetrix-deterministic/blob/master/animation.gif "")
 
 Deterministic Tetrix is a project of deterministic AI that uses greedy algorithm without lookahead on the next piece.
