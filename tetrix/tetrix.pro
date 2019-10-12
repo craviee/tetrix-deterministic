@@ -5,6 +5,7 @@ HEADERS       = tetrixboard.h \
                 tetrixanalyzer.h \
                 tetrixmoviment.h \
                 tetrixpiece.h \
+                tetrixrotation.h \
                 tetrixwindow.h
 SOURCES       = main.cpp \
                 tetrixanalyzer.cpp \

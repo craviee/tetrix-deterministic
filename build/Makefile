@@ -258,6 +258,7 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		../tetrix/tetrixanalyzer.h \
 		../tetrix/tetrixmoviment.h \
 		../tetrix/tetrixpiece.h \
+		../tetrix/tetrixrotation.h \
 		../tetrix/tetrixwindow.h ../tetrix/main.cpp \
 		../tetrix/tetrixanalyzer.cpp \
 		../tetrix/tetrixboard.cpp \
@@ -670,7 +671,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../tetrix/tetrixboard.h ../tetrix/tetrixanalyzer.h ../tetrix/tetrixmoviment.h ../tetrix/tetrixpiece.h ../tetrix/tetrixwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../tetrix/tetrixboard.h ../tetrix/tetrixanalyzer.h ../tetrix/tetrixmoviment.h ../tetrix/tetrixpiece.h ../tetrix/tetrixrotation.h ../tetrix/tetrixwindow.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../tetrix/main.cpp ../tetrix/tetrixanalyzer.cpp ../tetrix/tetrixboard.cpp ../tetrix/tetrixpiece.cpp ../tetrix/tetrixwindow.cpp $(DISTDIR)/
 
 
@@ -715,6 +716,7 @@ moc_tetrixboard.cpp: ../tetrix/tetrixboard.h \
 		../tetrix/tetrixpiece.h \
 		../tetrix/tetrixanalyzer.h \
 		../tetrix/tetrixmoviment.h \
+		../tetrix/tetrixrotation.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include /home/craviee/Git/tetris-deterministic/build/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/craviee/Git/tetris-deterministic/tetrix -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/9.1.0 -I/usr/include/c++/9.1.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.1.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.1.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.1.0/include-fixed -I/usr/include ../tetrix/tetrixboard.h -o moc_tetrixboard.cpp
@@ -745,13 +747,15 @@ main.o: ../tetrix/main.cpp ../tetrix/tetrixwindow.h
 
 tetrixanalyzer.o: ../tetrix/tetrixanalyzer.cpp ../tetrix/tetrixanalyzer.h \
 		../tetrix/tetrixmoviment.h \
-		../tetrix/tetrixpiece.h
+		../tetrix/tetrixpiece.h \
+		../tetrix/tetrixrotation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tetrixanalyzer.o ../tetrix/tetrixanalyzer.cpp
 
 tetrixboard.o: ../tetrix/tetrixboard.cpp ../tetrix/tetrixboard.h \
 		../tetrix/tetrixpiece.h \
 		../tetrix/tetrixanalyzer.h \
-		../tetrix/tetrixmoviment.h
+		../tetrix/tetrixmoviment.h \
+		../tetrix/tetrixrotation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tetrixboard.o ../tetrix/tetrixboard.cpp
 
 tetrixpiece.o: ../tetrix/tetrixpiece.cpp ../tetrix/tetrixpiece.h
@@ -761,6 +765,7 @@ tetrixwindow.o: ../tetrix/tetrixwindow.cpp ../tetrix/tetrixboard.h \
 		../tetrix/tetrixpiece.h \
 		../tetrix/tetrixanalyzer.h \
 		../tetrix/tetrixmoviment.h \
+		../tetrix/tetrixrotation.h \
 		../tetrix/tetrixwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tetrixwindow.o ../tetrix/tetrixwindow.cpp
 
