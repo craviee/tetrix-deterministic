@@ -54,7 +54,6 @@
 enum TetrixShape { NoShape, ZShape, SShape, LineShape, TShape, SquareShape,
                    LShape, MirroredLShape };
 
-//! [0]
 class TetrixPiece
 {
 public:
@@ -70,7 +69,6 @@ public:
     int maxX() const;
     int minY() const;
     int maxY() const;
-    int maxRotations();
     TetrixPiece rotatedLeft() const;
     TetrixPiece rotatedRight() const;
 
@@ -81,6 +79,5 @@ private:
     TetrixShape pieceShape;
     int coords[4][2];
 };
-//! [0]
 
 #endif

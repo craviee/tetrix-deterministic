@@ -1,4 +1,3 @@
-
 #ifndef TETRIXBOARD_H
 #define TETRIXBOARD_H
 
@@ -13,7 +12,6 @@ QT_BEGIN_NAMESPACE
 class QLabel;
 QT_END_NAMESPACE
 
-//! [0]
 class TetrixBoard : public QFrame
 {
     Q_OBJECT
@@ -35,18 +33,16 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void timerEvent(QTimerEvent *event) override;
-//! [0]
 
-//! [1]
 private:
     enum { BoardWidth = 10, BoardHeight = 22 };
 
     TetrixAnalyzer *analyzer;
-    // TetrixMoviment currMoviment;
     TetrixShape &shapeAt(int x, int y) { return board[(y * BoardWidth) + x]; }
-    int timeoutTime() { return 10; }
+    int timeoutTime() { return 1000; }
     int squareWidth() { return contentsRect().width() / BoardWidth; }
     int squareHeight() { return contentsRect().height() / BoardHeight; }
+    void runAI();
     void clearBoard();
     void dropDown();
     void oneLineDown();
@@ -69,6 +65,5 @@ private:
     int numPiecesDropped;
     TetrixShape board[BoardWidth * BoardHeight];
 };
-//! [1]
 
 #endif
